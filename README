@@ -15,4 +15,27 @@ pyleus命令：
 	pyleus build examples/squid_hit_topology/pyleus_topology.yaml 编译topology应用 pyleus local squid_hit_topology.jar 本地运行
 	pyleus --verbose build /home/pyleus/examples/squid_hit_topology/pyleus_topology.yaml 查看编译时的详细信息
 	pyleus --verbose submit -n 10.4.2.176 squid_hit_topology.jar 查看提交运行时的详细信息，-n 后面的IP是storm 的nimbusIP，可以为主机名，前提是你的/etc/hosts文件有针对其主机名的解析 	
-	pyleus kill -n 10.4.2.176 topology_name 停止topology程序的运行，topology_name名称的定义在：pyleus_topology.yaml name: squid_hit_topology 即topology项目名，详细看代码文件
+	pyleus kill -n 10.4.2.176 topology_name 停止topology程序的运行
+	topology_name名称的定义在：pyleus_topology.yaml name: squid_hit_topology 即topology项目名，详细看代码文件:examples/squid_hit_topology/pyleus_topology.yaml
+
+    在整个程序设计中，kafka的spout是需要注意的，同时代码文件中上传了flume的配置文件
+    pyleus_topology.yaml 定义spout和bolt
+    name: squid_hit_topology
+    workers: 2
+    topology:
+        - spout:
+            name: data_source_kafka
+            type: kafka
+            options:
+                #配置kafka的topic
+                topic: squid_log
+                #配置zookeeper地址，多个用逗号隔开
+                zk_hosts: 10.63.13.138:2181,10.63.13.107:2181,10.63.13.143:2181
+                #配置给kafka存储consumer offsets的ZK Root Path
+                zk_root: /pyleus/partition
+                #Kafka consumer ID
+                consumer_id: squid
+                #定义需要从某个offset开始吗
+                #默认为false
+                from_start: false
+                binary_data: true
