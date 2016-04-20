@@ -1,0 +1,18 @@
+写在前言： 旨在分享，写的很简单
+需求：实时分析squid的命中率，根据需求，使用到了flume，storm，kafka 
+数据读写，思路：
+ 	1.先通过squid定义，将log写到rsyslog上 
+	2.通过flume syslogtcp type方式，获取数据，sink到kafka 
+	3.Python编写topology，借助pyleus模块，spout从kafka读取数据，bolt做一次分析，将数据实时写入到mysql中，写入到hbase中更好
+
+
+
+pyleus安装： 
+	安装包：git clone https://github.com/Yelp/pyleus.git 
+	运行命令：pip2.6 install pyleus （如果不执行，将无法使用pyleus相关命令，前提是安装了pip）
+
+pyleus命令： 
+	pyleus build examples/squid_hit_topology/pyleus_topology.yaml 编译topology应用 pyleus local squid_hit_topology.jar 本地运行
+	pyleus --verbose build /home/pyleus/examples/squid_hit_topology/pyleus_topology.yaml 查看编译时的详细信息
+	pyleus --verbose submit -n 10.4.2.176 squid_hit_topology.jar 查看提交运行时的详细信息，-n 后面的IP是storm 的nimbusIP，可以为主机名，前提是你的/etc/hosts文件有针对其主机名的解析 	
+	pyleus kill -n 10.4.2.176 topology_name 停止topology程序的运行，topology_name名称的定义在：pyleus_topology.yaml name: squid_hit_topology 即topology项目名，详细看代码文件
