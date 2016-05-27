@@ -39,3 +39,5 @@ pyleus命令：
                 #默认为false
                 from_start: false
                 binary_data: true
+主要注意的是：
+	zk_root和consuer_id 在zk的路径是会自动创建的，自动创建的前提是，数据被成功的消费
